@@ -13,7 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,11 +41,75 @@ class SchedulerServiceTest {
 
         Mockito.when(repository.findById(programId)).thenReturn(Mono.just(program));
         //TODO: hacer una subscripción de el servicio reactivo
-        List<ProgramDate> response = schedulerService.generateCalendar(programId, startDate);
+        Flux<ProgramDate> response = schedulerService.generateCalendar(programId, startDate);
+        StepVerifier
+                .create(response)
+                .expectNextCount(13)
+                .expectComplete();
 
-        Assertions.assertEquals(13, response.size());//TODO: hacer de otro modo
-        Assertions.assertEquals(getSnapResult(), new Gson().toJson(response));//TODO: hacer de otro modo
+        StepVerifier.create(response).expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-03")
+                            && programa.getCategoryName().equals("Principios");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-04")
+                            && programa.getCategoryName().equals("Principios");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-05")
+                            && programa.getCategoryName().equals("Bases");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-06")
+                            && programa.getCategoryName().equals("Bases");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-07")
+                            && programa.getCategoryName().equals("Fundamentos");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-10")
+                            && programa.getCategoryName().equals("Fundamentos");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-11")
+                            && programa.getCategoryName().equals("Fundamentos");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-12")
+                            && programa.getCategoryName().equals("Fundamentos");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-13")
+                            && programa.getCategoryName().equals("Fundamentos avazandos");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-14")
+                            && programa.getCategoryName().equals("Fundamentos avazandos");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-17")
+                            && programa.getCategoryName().equals("Fundamentos avazandos");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-18")
+                            && programa.getCategoryName().equals("Fundamentos avazandos");
+                })
+                .expectNextMatches(programa -> {
+                    return programa.getDate().toString().equals("2022-01-19")
+                            && programa.getCategoryName().equals("Fundamentos avazandos");
+                })
+                .verifyComplete();
+
+        StepVerifier
+                .create(response)
+                .expectNextCount(13)
+                .verifyComplete();
+
+//        Assertions.assertEquals(13, response.size());//TODO: hacer de otro modo
+//        Assertions.assertEquals(getSnapResult(), new Gson().toJson(response));//TODO: hacer de otro modo
         Mockito.verify(repository).findById(programId);
+
     }
 
     @Test
